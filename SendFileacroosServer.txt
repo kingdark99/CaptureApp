@@ -1,0 +1,56 @@
+Dim SentFile As Object
+Dim CopyPathFile As String
+Dim BKPathFile As String
+Dim HaveFile As String
+Dim fso_sv As Object
+Dim oFile_sv As Object
+Dim svName As Variant
+Dim Total As Long, TotalSuccess As Long
+Set fso_sv = CreateObject("Scripting.FileSystemObject")
+Set oFile_sv = fso_sv.CreateTextFile(ThisWorkbook.Path & "\SendFile_log.txt")
+Set SentFile = VBA.CreateObject("Scripting.FileSystemObject")
+
+
+Total = 0
+TotalSuccess = 0
+
+ For sv = 2 To Sheets("SVname").Cells(Rows.Count, 1).End(xlUp).Row
+ svName = Sheets("SVname").Cells(sv, 2).Value
+ 
+ 
+  CopyPathFile = "\\" & svName & "\D$\test_path\Application DMS P2\"
+  HaveFile = "\\" & svName & "\D$\test_path\Application DMS P2\" & FileName
+  BKPathFile = "\\" & svName & "\D$\test_path\Application DMS P2\BK_INI\"
+ 
+
+   
+    If Len(Dir(CopyPathFile)) = 0 Then   'Check path is corect
+        oFile_sv.Writeline "Send file fail        at " & svName
+    Else
+        If Len(Dir(HaveFile)) = 0 Then  'Check have file or not
+            Call SentFile.CopyFile(PathFile, CopyPathFile, True)
+          
+            
+        Else
+        
+            If Len(Dir(BKPathFile)) = 0 Then 'Check folder backup if not have Create folder
+                fso.CreateFolder (BKPathFile)
+            End If
+               
+                Call SentFile.CopyFile(HaveFile, BKPathFile & "Filenames" & Format(DateTime.Now, "yyyymmddhhmmss") & ".txt", True)
+                Call SentFile.CopyFile(PathFile, CopyPathFile, True)
+           
+        End If
+         
+        oFile_sv.Writeline "Send file Successfull at " & svName
+        TotalSuccess = TotalSuccess + 1
+   End If
+   Total = Total + 1
+Next sv
+ 
+oFile_sv.Writeline "Total          : " & Total
+oFile_sv.Writeline "Total Success  : " & TotalSuccess
+ 
+oFile_sv.Close
+Set fso_sv = Nothing
+Set oFile_sv = Nothing
